@@ -26,7 +26,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #define __UI_SHARED_H
 
 #include "../qcommon/q_shared.h"
-#include "../renderercommon/tr_types.h"
+#include "../renderer/tr_types.h"
 #include "../client/keycodes.h"
 #include "../../ui/menudef.h"
 

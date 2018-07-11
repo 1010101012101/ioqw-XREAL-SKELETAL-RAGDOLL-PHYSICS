@@ -31,7 +31,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "../renderercommon/tr_common.h"
+#include "../renderer/tr_common.h"
 #include "../sys/sys_local.h"
 #include "sdl_icon.h"
 

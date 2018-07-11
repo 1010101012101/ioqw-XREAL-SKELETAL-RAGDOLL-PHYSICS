@@ -23,7 +23,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 */
 
 #include "../qcommon/q_shared.h"
-#include "../renderercommon/tr_types.h"
+#include "../renderer/tr_types.h"
 #include "../game/bg_public.h"
 #include "cg_public.h"
 
