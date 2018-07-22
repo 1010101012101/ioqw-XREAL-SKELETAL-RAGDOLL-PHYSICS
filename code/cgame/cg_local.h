@@ -23,7 +23,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 */
 
 #include "../qcommon/q_shared.h"
-#include "../renderer/tr_types.h"
+#include "../renderercommon/tr_types.h"
 #include "../game/bg_public.h"
 #include "cg_public.h"
 
@@ -745,6 +745,7 @@ typedef struct {
 	qhandle_t escortShader;
 	// sounds
 	sfxHandle_t talkSound;
+	sfxHandle_t killSound;
 	sfxHandle_t hitSound;
 	sfxHandle_t hitSoundHighArmor;
 	sfxHandle_t hitSoundLowArmor;

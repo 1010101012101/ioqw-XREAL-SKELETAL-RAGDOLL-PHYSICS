@@ -22,7 +22,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 =======================================================================================================================================
 */
 
-#include "../renderer/tr_common.h"
+#include "../renderercommon/tr_common.h"
 
 qboolean (*qwglSwapIntervalEXT)(int interval);
 void (*qglMultiTexCoord2fARB)(GLenum texture, float s, float t);

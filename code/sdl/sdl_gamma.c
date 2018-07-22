@@ -27,7 +27,7 @@ ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 #else
 #include <SDL.h>
 #endif
-#include "../renderer/tr_common.h"
+#include "../renderercommon/tr_common.h"
 #include "../qcommon/qcommon.h"
 
 extern SDL_Window *SDL_window;
