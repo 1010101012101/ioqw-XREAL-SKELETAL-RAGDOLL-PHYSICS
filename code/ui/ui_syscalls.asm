@@ -78,8 +78,15 @@ equ trap_R_SetColor							-311
 equ trap_R_DrawStretchPic					-312
 equ trap_R_LerpTag							-313
 equ trap_R_ModelBounds						-314
-equ trap_R_RemapShader						-315
-equ trap_R_SetClipRegion					-316
+equ trap_R_CheckSkeleton					-315
+equ trap_R_BuildSkeleton					-316
+equ trap_R_BlendSkeleton					-317
+equ trap_R_BoneIndex						-318
+equ trap_R_RegisterAnimation				-319
+equ trap_R_AnimNumFrames					-320
+equ trap_R_AnimFrameRate					-321
+equ trap_R_RemapShader						-322
+equ trap_R_SetClipRegion					-323
 
 equ trap_S_RegisterSound					-401
 equ trap_S_StartLocalSound					-402
