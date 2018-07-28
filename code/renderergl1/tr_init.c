@@ -235,6 +235,13 @@ static void InitOpenGL(void) {
 
 		qglGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &temp);
 		glConfig.numTextureUnits = temp;
+		// reserve 160 components for other uniforms
+		qglGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS, &temp);
+		glRefConfig.glslMaxAnimatedBones = Com_Clamp(0, IQM_MAX_JOINTS, (temp - 160) / 16);
+
+		if (glRefConfig.glslMaxAnimatedBones < 12) {
+			glRefConfig.glslMaxAnimatedBones = 0;
+		}
 	}
 	// set default state
 	GL_SetDefaultState();
@@ -1474,13 +1481,6 @@ refexport_t *GetRefAPI(int apiVersion, refimport_t *rimp) {
 	re.MarkFragments = R_MarkFragments;
 	re.LerpTag = R_LerpTag;
 	re.ModelBounds = R_ModelBounds;
-	re.CheckSkeleton = RE_CheckSkeleton;
-	re.BuildSkeleton = RE_BuildSkeleton;
-	re.BlendSkeleton = RE_BlendSkeleton;
-	re.BoneIndex = RE_BoneIndex;
-	re.RegisterAnimation = RE_RegisterAnimation;
-	re.AnimNumFrames = RE_AnimNumFrames;
-	re.AnimFrameRate = RE_AnimFrameRate;
 	re.ClearScene = RE_ClearScene;
 	re.AddRefEntityToScene = RE_AddRefEntityToScene;
 	re.AddPolyToScene = RE_AddPolyToScene;
