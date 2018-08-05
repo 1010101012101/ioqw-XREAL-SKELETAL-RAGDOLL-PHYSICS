@@ -1124,6 +1124,7 @@ typedef enum {
 	ET_GENERAL,
 	ET_PLAYER,
 	ET_MISSILE,
+	ET_PHYSICS_BOX,	// 'Physics Engine' visualization tool
 	ET_TEAM,
 	ET_ITEM,
 	ET_MOVER,

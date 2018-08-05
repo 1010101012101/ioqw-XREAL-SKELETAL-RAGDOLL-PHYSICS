@@ -238,6 +238,8 @@ void QDECL G_Error(const char *fmt, ...) {
 	Q_vsnprintf(text, sizeof(text), fmt, argptr);
 	va_end(argptr);
 
+	G_ShutdownBulletPhysics();
+
 	trap_Error(text);
 }
 
@@ -438,6 +440,7 @@ void G_InitGame(int levelTime, int randomSeed, int restart) {
 		G_Printf("Not logging to disk.\n");
 	}
 
+	G_InitBulletPhysics();
 	G_InitWorldSession();
 	G_RegisterCommands();
 	// initialize all entities for this game
@@ -499,6 +502,8 @@ G_ShutdownGame
 void G_ShutdownGame(int restart) {
 
 	G_Printf("==== ShutdownGame ====\n");
+
+	G_ShutdownBulletPhysics();
 
 	if (level.logFile) {
 		G_LogPrintf("ShutdownGame:\n");
@@ -1751,7 +1756,7 @@ Advances the non-player objects in the world.
 =======================================================================================================================================
 */
 void G_RunFrame(int levelTime) {
-	int i;
+	int msec, i;
 	gentity_t *ent;
 
 	// if we are waiting for the level to restart, do nothing
@@ -1762,8 +1767,12 @@ void G_RunFrame(int levelTime) {
 	level.framenum++;
 	level.previousTime = level.time;
 	level.time = levelTime;
+
+	msec = level.time - level.previousTime;
 	// get any cvar changes
 	G_UpdateCvars();
+	// simulate dynamics world
+	G_RunPhysics(msec);
 	// go through all allocated objects
 	ent = &g_entities[0];
 
