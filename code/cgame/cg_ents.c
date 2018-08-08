@@ -531,7 +531,7 @@ static void CG_Physics_Box(centity_t *cent) {
 	verts[3].st[0] = 1;
 	verts[3].st[1] = 0;
 	// set the polygon's vertex colors
-	switch (cent->currentState.generic1) {
+	switch (cent->currentState.tokens) {
 		case ACTIVE_TAG:
 			for (i = 0; i < 4; i++) {
 				verts[i].modulate[0] = 255;

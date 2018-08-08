@@ -867,20 +867,6 @@ intptr_t CL_UISystemCalls(intptr_t *args) {
 		case UI_R_MODELBOUNDS:
 			re.ModelBounds(args[1], VMA(2), VMA(3));
 			return 0;
-		case UI_R_CHECKSKELETON:
-			return re.CheckSkeleton(VMA(1), args[2], args[3]);
-		case UI_R_BUILDSKELETON:
-			return re.BuildSkeleton(VMA(1), args[2], args[3], args[4], VMF(5), args[6]);
-		case UI_R_BLENDSKELETON:
-			return re.BlendSkeleton(VMA(1), VMA(2), VMF(3));
-		case UI_R_BONEINDEX:
-			return re.BoneIndex(args[1], VMA(2));
-		case UI_R_REGISTERANIMATION:
-			return re.RegisterAnimation(VMA(1));
-		case UI_R_ANIMNUMFRAMES:
-			return re.AnimNumFrames(args[1]);
-		case UI_R_ANIMFRAMERATE:
-			return re.AnimFrameRate(args[1]);
 		case UI_R_REMAP_SHADER:
 			re.RemapShader(VMA(1), VMA(2), VMA(3));
 			return 0;
