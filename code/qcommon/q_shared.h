@@ -662,6 +662,9 @@ void MakeNormalVectors(const vec3_t forward, vec3_t right, vec3_t up);
 // perpendicular vector could be replaced by this
 //int PlaneTypeForNormal(vec3_t normal);
 void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3]);
+void MatrixFromAngles(matrix_t m, vec_t pitch, vec_t yaw, vec_t roll);
+void MatrixSetupTransformFromRotation(matrix_t m, const matrix_t rot, const vec3_t origin);
+void MatrixTransformPoint2(const matrix_t m, vec3_t inout);
 void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
 // optimized version of AngleVectors (when only forward is needed)
 void AngleVectorsForward(const vec3_t angles, vec3_t forward);
@@ -671,9 +674,6 @@ void PerpendicularVector(vec3_t dst, const vec3_t src);
 #endif
 #ifndef MIN
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
-void MatrixFromAngles(matrix_t m, vec_t pitch, vec_t yaw, vec_t roll);
-void MatrixSetupTransformFromRotation(matrix_t m, const matrix_t rot, const vec3_t origin);
-void MatrixTransformPoint2(const matrix_t m, vec3_t inout);
 #endif
 float Com_Clamp(float min, float max, float value);
 char *COM_SkipPath(char *pathname);
