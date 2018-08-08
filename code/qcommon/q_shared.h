@@ -306,6 +306,7 @@ typedef vec_t vec3_t[3];
 typedef vec_t vec4_t[4];
 typedef vec_t vec5_t[5];
 
+typedef vec_t matrix_t[16];
 typedef int fixed4_t;
 typedef int fixed8_t;
 typedef int fixed16_t;
@@ -670,6 +671,9 @@ void PerpendicularVector(vec3_t dst, const vec3_t src);
 #endif
 #ifndef MIN
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
+void MatrixFromAngles(matrix_t m, vec_t pitch, vec_t yaw, vec_t roll);
+void MatrixSetupTransformFromRotation(matrix_t m, const matrix_t rot, const vec3_t origin);
+void MatrixTransformPoint2(const matrix_t m, vec3_t inout);
 #endif
 float Com_Clamp(float min, float max, float value);
 char *COM_SkipPath(char *pathname);

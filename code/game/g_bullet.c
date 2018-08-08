@@ -259,7 +259,7 @@ static void G_PhysicsBox_Physics(gentity_t * ent)
 
 		QuatToAngles(rotation, ent->s.apos.trBase);
 
-		ent->s.generic1 = body->getActivationState();
+		ent->s.tokens = body->getActivationState();
 
 		trap_LinkEntity(ent);
 	}
