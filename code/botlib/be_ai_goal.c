@@ -1344,11 +1344,8 @@ int BotChooseLTGItem(int goalstate, vec3_t origin, int *inventory, int travelfla
 	// if the bot is in solid or if the area the bot is in has no reachability links
 	if (!areanum || !AAS_AreaReachability(areanum)) {
 		// use the last valid area the bot was in
-		// http://www.smokin-guns.org/viewtopic.php?t=2382&start=15
 		if (gs->lastreachabilityarea > 0) {
 			areanum = gs->lastreachabilityarea;
-		} else {
-			botimport.Print(PRT_MESSAGE, S_COLOR_YELLOW "BotChooseLTGItem: gs->lastreachabilityarea > 0.\n"); // DEBUG
 		}
 	}
 	// if still in solid
@@ -1534,11 +1531,8 @@ int BotChooseNBGItem(int goalstate, vec3_t origin, int *inventory, int travelfla
 	// if the bot is in solid or if the area the bot is in has no reachability links
 	if (!areanum || !AAS_AreaReachability(areanum)) {
 		// use the last valid area the bot was in
-		// http://www.smokin-guns.org/viewtopic.php?t=2382&start=15
 		if (gs->lastreachabilityarea > 0) {
 			areanum = gs->lastreachabilityarea;
-		} else {
-			botimport.Print(PRT_MESSAGE, S_COLOR_YELLOW "BotChooseNBGItem: gs->lastreachabilityarea > 0.\n"); // DEBUG
 		}
 	}
 	// if still in solid
