@@ -323,6 +323,8 @@ int BotGetItemLongTermGoal(bot_state_t *bs, int tfl, bot_goal_t *goal) {
 			// reset the avoid goals and the avoid reach
 			trap_BotResetAvoidGoals(bs->gs);
 			trap_BotResetAvoidReach(bs->ms);
+			// check blocked teammates
+			BotCheckBlockedTeammates(bs);
 		}
 		// get the goal at the top of the stack
 		return trap_BotGetTopGoal(bs->gs, goal);
@@ -373,6 +375,8 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 
 			if (VectorLengthSquared(dir) < Square(100)) {
 				trap_BotResetAvoidReach(bs->ms);
+				// check blocked teammates
+				BotCheckBlockedTeammates(bs);
 				return qfalse;
 			}
 		} else {
@@ -481,6 +485,8 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 			}
 
 			trap_BotResetAvoidReach(bs->ms);
+			// check blocked teammates
+			BotCheckBlockedTeammates(bs);
 			return qfalse;
 		}
 		// if the entity information is valid (entity in PVS)
@@ -691,6 +697,8 @@ int BotGetLongTermGoal(bot_state_t *bs, int tfl, int retreat, bot_goal_t *goal) 
 			}
 			// FIXME: move around a bit
 			trap_BotResetAvoidReach(bs->ms);
+			// check blocked teammates
+			BotCheckBlockedTeammates(bs);
 			return qfalse;
 		}
 
@@ -1561,6 +1569,8 @@ int AINode_Wait(bot_state_t *bs) {
 			return qfalse;
 		}
 	}
+	// check if the bot is blocking teammates
+	BotCheckBlockedTeammates(bs);
 	// if the viewangles are used for the movement
 	if (moveresult.flags & (MOVERESULT_MOVEMENTVIEWSET|MOVERESULT_MOVEMENTVIEW|MOVERESULT_SWIMVIEW)) {
 		VectorCopy(moveresult.ideal_viewangles, bs->ideal_viewangles);
