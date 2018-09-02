@@ -3516,7 +3516,7 @@ BotAttackMove
 bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 	int movetype, i, attackentity, attack_dist, attack_range;
 	float attack_skill, jumper, croucher, dist, selfpreservation, strafechange_time;
-	vec3_t forward, backward, sideward, start, hordir, up = {0, 0, 1};
+	vec3_t forward, backward, sideward, start, hordir, up = {0, 0, 1}, mins = {-4, -4, -4}, maxs = {4, 4, 4};
 	aas_entityinfo_t entinfo;
 	bot_moveresult_t moveresult;
 	bot_goal_t goal;
@@ -3575,23 +3575,27 @@ bot_moveresult_t BotAttackMove(bot_state_t *bs, int tfl) {
 		croucher = 0;
 	}
 
-	if (bs->attackcrouch_time < FloatTime() - 1) {
+	if (bs->crouch_time < FloatTime() - 1) {
 		if (random() < jumper) {
 			movetype = MOVE_JUMP;
 		// wait at least one second before crouching again
-		} else if (bs->attackcrouch_time < FloatTime() - 1 && random() < croucher) {
-			bs->attackcrouch_time = FloatTime() + croucher * 5;
+		} else if (bs->crouch_time < FloatTime() - 1 && random() < croucher) {
+			bs->crouch_time = FloatTime() + croucher * 5;
 		}
 	}
-
-	if (bs->attackcrouch_time > FloatTime()) {
-		// get the start point aiming from
+	// don't crouch when swimming
+	if (trap_AAS_Swimming(bs->origin)) {
+		bs->crouch_time = FloatTime() - 1;
+	}
+	// if the bot wants to crouch
+	if (bs->crouch_time > FloatTime()) {
+		// only try to crouch if the enemy remains visible
 		VectorCopy(bs->origin, start);
 
 		start[2] += CROUCH_VIEWHEIGHT;
 
-		BotAI_Trace(&bsptrace, start, NULL, NULL, entinfo.origin, bs->client, MASK_SHOT);
-		// only try to crouch if the enemy remains visible
+		BotAI_Trace(&bsptrace, start, mins, maxs, entinfo.origin, bs->client, MASK_SHOT);
+		// if the enemy is visible from the current position
 		if (bsptrace.fraction >= 1.0 || bsptrace.entityNum == attackentity) {
 			movetype = MOVE_CROUCH;
 		}
@@ -5009,11 +5013,88 @@ WARNING 2: Bots will also throw grenades through windows even from distance, so 
 
 /*
 =======================================================================================================================================
+BotMayRadiusDamageTeamMate
+=======================================================================================================================================
+*/
+static qboolean BotMayRadiusDamageTeamMate(bot_state_t *bs, vec3_t origin, float radius) {
+	gentity_t *ent;
+	int i, e, numListedEntities, entityList[MAX_GENTITIES];
+	float selfpreservation, teampreservation;
+	vec3_t mins, maxs, v;
+	team_t team;
+
+	if (g_gametype.integer < GT_TEAM) {
+		return qfalse;
+	}
+
+	if (!g_friendlyFire.integer) {
+		return qfalse;
+	}
+
+	if (radius < 1) {
+		radius = 1;
+	}
+
+	for (i = 0; i < 3; i++) {
+		mins[i]= origin[i] - radius;
+		maxs[i]= origin[i] + radius;
+	}
+
+	team = g_entities[bs->entitynum].client->sess.sessionTeam;
+	numListedEntities = trap_EntitiesInBox(mins, maxs, entityList, MAX_GENTITIES);
+	selfpreservation = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_SELFPRESERVATION, 0, 1);
+	teampreservation = trap_Characteristic_BFloat(bs->character, CHARACTERISTIC_TEAMPRESERVATION, 0, 1);
+
+	for (e = 0; e < numListedEntities; e++) {
+		ent = &g_entities[entityList[e]];
+		// if this is the bot self
+		if (e == bs->client && selfpreservation < 1) {
+			continue;
+		}
+
+		if (!ent->takedamage) {
+			continue;
+		}
+
+		if (!ent->client) {
+			continue;
+		}
+
+		if (ent->client->sess.sessionTeam != team) {
+			continue;
+		}
+
+		if (ent->client->ps.stats[STAT_HEALTH] <= 0) {
+			continue;
+		}
+		// find the distance from the edge of the bounding box
+		for (i = 0; i < 3; i++) {
+			if (origin[i] < ent->r.absmin[i]) {
+				v[i] = ent->r.absmin[i] - origin[i];
+			} else if (origin[i] > ent->r.absmax[i]) {
+				v[i] = origin[i] - ent->r.absmax[i];
+			} else {
+				v[i] = 0;
+			}
+		}
+
+		if (VectorLength(v) >= (radius * 2 * teampreservation)) {
+			continue;
+		}
+
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+/*
+=======================================================================================================================================
 BotCheckAttack
 =======================================================================================================================================
 */
 void BotCheckAttack(bot_state_t *bs) {
-	float points, reactiontime, firethrottle;
+	float reactiontime, firethrottle;
 	int attackentity, fov;
 	bsp_trace_t bsptrace;
 	//float selfpreservation;
@@ -5131,18 +5212,10 @@ void BotCheckAttack(bot_state_t *bs) {
 			}
 		}
 	}
-	// if won't hit the enemy or not attacking a player (could be an obelisk)
-	if (trace.entityNum != attackentity || attackentity >= MAX_CLIENTS) {
-		// if the projectile does radial damage
-		if (wi.proj.damagetype & DAMAGETYPE_RADIAL) {
-			if (trace.fraction * 1000 < wi.proj.radius) {
-				points = (wi.proj.damage - 0.5 * trace.fraction * 1000) * 0.5;
 
-				if (points > 0) {
-					return;
-				}
-			}
-			// FIXME: check if a teammate gets radial damage
+	if (wi.proj.damagetype & DAMAGETYPE_RADIAL) {
+		if (BotMayRadiusDamageTeamMate(bs, trace.endpos, wi.proj.radius)) {
+			return;
 		}
 	}
 	// if fire has to be release to activate weapon
@@ -6113,7 +6186,7 @@ void BotCheckBlockedTeammates(bot_state_t *bs) {
 		// if the teammate is too close (blocked)
 		if (trace.entityNum == i && (trace.startsolid || trace.fraction < 1.0)) {
 			// stop crouching to gain speed
-			bs->attackcrouch_time = FloatTime() - 1;
+			bs->crouch_time = FloatTime() - 1;
 			// look into the direction of the blocked teammate
 			vectoangles(v2, bs->ideal_viewangles);
 			// get the sideward vector
